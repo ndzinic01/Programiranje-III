@@ -77,6 +77,7 @@
             tbImePrezime.Name = "tbImePrezime";
             tbImePrezime.Size = new Size(242, 27);
             tbImePrezime.TabIndex = 3;
+            tbImePrezime.TextChanged += tbImePrezime_TextChanged;
             // 
             // cmbDrzava
             // 

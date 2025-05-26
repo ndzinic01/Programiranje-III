@@ -38,12 +38,16 @@ namespace DLWMS.WinApp.IspitIB220035
 
             var drzava = cmbDrzava.SelectedItem == null ? db.Drzave.First() : cmbDrzava.SelectedItem as Drzava;
             var spol = cmbSpol.SelectedItem == null ? db.SpolIB220035.First() : cmbSpol.SelectedItem as Spol;
+            var imePrezimeFilter = tbImePrezime.Text.ToLower().Trim();
 
             studentiPodaci = db.Studenti
                 .Include(x => x.Gradovi)
                 .Where(x => x.SpolId == spol.Id &&
-                x.Gradovi.DrzavaId == drzava.Id)
-                .ToList();
+                x.Gradovi.DrzavaId == drzava.Id &&
+                (string.IsNullOrWhiteSpace(imePrezimeFilter) ||
+             x.Ime.ToLower().Contains(imePrezimeFilter) ||
+             x.Prezime.ToLower().Contains(imePrezimeFilter)))
+             .ToList();
             Text = $"Broj prikazanih studenata: {studentiPodaci.Count}";
             if (studentiPodaci != null)
             {
@@ -89,22 +93,27 @@ namespace DLWMS.WinApp.IspitIB220035
                 db.SaveChanges();
                 UcitajPodatke();
             }
-            else if(e.ColumnIndex == 5)
+            else if (e.ColumnIndex == 5)
             {
                 var novaForma = new frmRazmjeneIB220035(studentiPodaci[e.RowIndex]);
                 novaForma.ShowDialog();
-                
+
             }
         }
 
         private void dgvPodaci_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.ColumnIndex == 0)
+            if (e.ColumnIndex == 0)
             {
                 var novaForma = new frmStudentEditIB220035(studentiPodaci[e.RowIndex], db);
                 novaForma.ShowDialog();
                 UcitajPodatke();
             }
+        }
+
+        private void tbImePrezime_TextChanged(object sender, EventArgs e)
+        {
+            UcitajPodatke();
         }
     }
 }
